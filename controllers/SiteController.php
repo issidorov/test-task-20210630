@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\models\Log;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -61,7 +63,21 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $query = Log::find()->joinWith(['system', 'browser']);
+
+        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        $dataProvider->sort->attributes['system.name'] = [
+            'asc' => ['system.name' => SORT_ASC],
+            'desc' => ['system.name' => SORT_DESC],
+        ];
+        $dataProvider->sort->attributes['browser.name'] = [
+            'asc' => ['browser.name' => SORT_ASC],
+            'desc' => ['browser.name' => SORT_DESC],
+        ];
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     /**

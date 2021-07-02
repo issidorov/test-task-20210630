@@ -43,6 +43,15 @@ class Log extends ActiveRecord
         $this->browser = $line->agent->browser ? Browser::instanceByName($line->agent->browser, true) : null;
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'ip' => 'IP',
+            'time' => 'Время',
+            'url' => 'URL',
+        ];
+    }
+
     public function getSystem()
     {
         return $this->hasOne(System::class, ['id' => 'system_id']);
