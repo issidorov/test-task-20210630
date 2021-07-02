@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Browser;
 use app\models\Log;
+use app\models\LogFilterForm;
+use app\models\System;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -65,6 +68,11 @@ class SiteController extends Controller
     {
         $query = Log::find()->joinWith(['system', 'browser']);
 
+        $filter = new LogFilterForm();
+        if ($filter->load(Yii::$app->request->queryParams) && $filter->validate()) {
+            $filter->apply($query);
+        }
+
         $dataProvider = new ActiveDataProvider(['query' => $query]);
         $dataProvider->sort->attributes['system.name'] = [
             'asc' => ['system.name' => SORT_ASC],
@@ -75,8 +83,17 @@ class SiteController extends Controller
             'desc' => ['browser.name' => SORT_DESC],
         ];
 
+        $systems = System::find()->orderBy('name')->all();
+        $systemNames = array_column($systems, 'name', 'id');
+
+        $browsers = Browser::find()->orderBy('name')->all();
+        $browserNames = array_column($browsers, 'name', 'id');
+
         return $this->render('index', [
-            'dataProvider' => $dataProvider
+            'dataProvider' => $dataProvider,
+            'filter' => $filter,
+            'systemNames' => $systemNames,
+            'browserNames' => $browserNames,
         ]);
     }
 
