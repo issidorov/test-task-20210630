@@ -3,6 +3,7 @@ Nginx Log Analyzer
 
 This is a test task project.
 
+![screenshot](docs/screenshot.png)
 
 REQUIREMENTS
 ------------
