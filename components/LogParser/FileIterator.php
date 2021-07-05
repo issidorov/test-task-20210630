@@ -22,6 +22,13 @@ class FileIterator implements Iterator
         $this->rewind();
     }
 
+    public function getPercentPosition()
+    {
+        $size = fstat($this->fd)['size'];
+        $pos = ftell($this->fd);
+        return $pos / $size * 100;
+    }
+
     public function current()
     {
         if ($this->line === null) {

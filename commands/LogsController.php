@@ -10,6 +10,7 @@ use app\models\Log;
 use Error;
 use Yii;
 use yii\console\Controller;
+use yii\helpers\Console;
 
 class LogsController extends Controller
 {
@@ -25,6 +26,7 @@ class LogsController extends Controller
         $parser = new LogParser();
         $lines = $parser->parseFile($filename);
 
+        Console::startProgress(0, 100);
         $transaction = Yii::$app->db->beginTransaction();
 
         foreach ($lines as $index => $line) {
@@ -34,9 +36,14 @@ class LogsController extends Controller
             if (!$model->save()) {
                 throw new Error('Save is invalid on line ' . ($index + 1));
             }
+            if ($index % 100 === 0) {
+                Console::updateProgress($lines->getPercentPosition(), 100);
+            }
         }
         $saver->finish();
 
         $transaction->commit();
+        Console::updateProgress(100, 100);
+        Console::endProgress();
     }
 }
