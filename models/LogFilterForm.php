@@ -9,6 +9,9 @@ use yii\db\ActiveQuery;
 
 class LogFilterForm extends Model
 {
+    const ATTR_DATE = 'date';
+    const ATTR_SYSTEM = 'system';
+
     /** @var string - begin date */
     public $begin;
     /** @var string - end date */
@@ -16,9 +19,18 @@ class LogFilterForm extends Model
     /** @var int */
     public $system;
 
+    public function __construct($defaultBeginDate, $defaultEndDate)
+    {
+        parent::__construct([
+            'begin' => $defaultBeginDate,
+            'end' => $defaultEndDate,
+        ]);
+    }
+
     public function rules()
     {
         return [
+            [['begin', 'end'], 'required'],
             [['begin', 'end'], 'date', 'format' => 'php:Y-m-d'],
             [['system'], 'integer'],
             ['system', 'default', 'value' => null],
@@ -41,28 +53,24 @@ class LogFilterForm extends Model
 
     public function validateDateRange()
     {
-        if ($this->begin && !$this->end) {
-            $this->end = date('Y-m-d', strtotime($this->begin . ' + 1 year'));
+        if (strtotime($this->begin . ' + 1 year') < strtotime($this->end)) {
+            $this->addError('begin', 'Допустимый промежуток не более 1 года');
+            $this->addError('end', 'Допустимый промежуток не более 1 года');
         }
-        if (!$this->begin && $this->end) {
-            $this->begin = date('Y-m-d', strtotime($this->end . ' - 1 year'));
-        }
-        if ($this->begin && $this->end) {
-            if (strtotime($this->begin . ' + 1 year') < strtotime($this->end)) {
-                $this->addError('begin', 'Допустимый промежуток не более 1 года');
-                $this->addError('end', 'Допустимый промежуток не более 1 года');
-            }
-            if (strtotime($this->begin) > strtotime($this->end)) {
-                $this->addError('begin', 'Начальная дата больше конечной');
-                $this->addError('end', 'Конечная дата меньше начальной');
-            }
+        if (strtotime($this->begin) > strtotime($this->end)) {
+            $this->addError('begin', 'Начальная дата больше конечной');
+            $this->addError('end', 'Конечная дата меньше начальной');
         }
     }
 
-    public function apply(ActiveQuery $query)
+    public function apply(ActiveQuery $query, array $attributes = [self::ATTR_DATE, self::ATTR_SYSTEM])
     {
-        $query->andFilterWhere(['>=', 'date', strtotime($this->begin)]);
-        $query->andFilterWhere(['<', 'date', strtotime($this->end . ' +1 day')]);
-        $query->andWhere(['system_id' => $this->system]);
+        if (in_array(self::ATTR_DATE, $attributes)) {
+            $query->andFilterWhere(['>=', 'date', $this->begin]);
+            $query->andFilterWhere(['<=', 'date', $this->end]);
+        }
+        if (in_array(self::ATTR_SYSTEM, $attributes)) {
+            $query->andWhere(['system_id' => $this->system]);
+        }
     }
 }

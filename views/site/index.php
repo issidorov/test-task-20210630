@@ -1,79 +1,31 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $dataProvider ActiveDataProvider */
-/* @var $filter LogFilterForm */
-/* @var $systemNames string[] */
-
 use app\models\LogFilterForm;
-use dosamigos\chartjs\ChartJs;
+use app\widgets\BrowserRequestsChart;
+use app\widgets\TotalRequestsChart;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 
-$this->title = 'My Yii Application';
+/* @var $this yii\web\View */
+/* @var $dataProvider ActiveDataProvider|null */
+/* @var $filter LogFilterForm */
+/* @var $systemNames string[] */
+
 ?>
 <div class="site-index">
-    <div class="row">
-        <div class="col-md-6">
-            <?= ChartJs::widget([
-                'type' => 'line',
-                'options' => [
-                    'height' => 150,
-                    'width' => 300,
-                ],
-                'data' => [
-                    'labels' => ["January", "February", "March", "April", "May", "June", "July"],
-                    'datasets' => [
-                        [
-                            'label' => "My First dataset",
-                            'backgroundColor' => "rgba(179,181,198,0.2)",
-                            'borderColor' => "rgba(179,181,198,1)",
-                            'pointBackgroundColor' => "rgba(179,181,198,1)",
-                            'pointBorderColor' => "#fff",
-                            'pointHoverBackgroundColor' => "#fff",
-                            'pointHoverBorderColor' => "rgba(179,181,198,1)",
-                            'data' => [65, 59, 90, 81, 56, 55, 40]
-                        ],
-                    ]
-                ]
-            ]); ?>
+    <?php if (!$filter->hasErrors()): ?>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-6">
+                    <?= TotalRequestsChart::widget(['filter' => $filter]); ?>
+                </div>
+                <div class="col-md-6">
+                    <?= BrowserRequestsChart::widget(['filter' => $filter]); ?>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <?= ChartJs::widget([
-                'type' => 'line',
-                'options' => [
-                    'height' => 150,
-                    'width' => 300,
-                ],
-                'data' => [
-                    'labels' => ["January", "February", "March", "April", "May", "June", "July"],
-                    'datasets' => [
-                        [
-                            'label' => "My First dataset",
-                            'backgroundColor' => "rgba(179,181,198,0.2)",
-                            'borderColor' => "rgba(179,181,198,1)",
-                            'pointBackgroundColor' => "rgba(179,181,198,1)",
-                            'pointBorderColor' => "#fff",
-                            'pointHoverBackgroundColor' => "#fff",
-                            'pointHoverBorderColor' => "rgba(179,181,198,1)",
-                            'data' => [65, 59, 90, 81, 56, 55, 40]
-                        ],
-                        [
-                            'label' => "My Second dataset",
-                            'backgroundColor' => "rgba(255,99,132,0.2)",
-                            'borderColor' => "rgba(255,99,132,1)",
-                            'pointBackgroundColor' => "rgba(255,99,132,1)",
-                            'pointBorderColor' => "#fff",
-                            'pointHoverBackgroundColor' => "#fff",
-                            'pointHoverBorderColor' => "rgba(255,99,132,1)",
-                            'data' => [28, 48, 40, 19, 96, 27, 100]
-                        ]
-                    ]
-                ]
-            ]); ?>
-        </div>
-    </div>
+    <?php endif; ?>
 
 
     <?php $form = ActiveForm::begin(['action' => ['site/index'], 'method' => 'get']) ?>
@@ -91,20 +43,22 @@ $this->title = 'My Yii Application';
             <div class="form-group">
                 <label class="control-label">&nbsp;</label>
                 <div>
-                    <button class="btn btn-primary" type="submit">Применить</button>
+                    <button class="btn btn-primary" type="submit">Применить фильтр</button>
                 </div>
             </div>
         </div>
     </div>
     <?php ActiveForm::end() ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-            'date',
-            'requests_count',
-            'top_url',
-            'topBrowser.name:text:Популярный браузер',
-        ],
-    ]) ?>
+    <?php if (!$filter->hasErrors()): ?>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'columns' => [
+                'date',
+                'requests_count',
+                'top_url',
+                'topBrowser.name:text:Популярный браузер',
+            ],
+        ]) ?>
+    <?php endif; ?>
 </div>
