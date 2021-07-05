@@ -44,14 +44,4 @@ class SiteController extends Controller
             'systemNames' => $systemNames,
         ]);
     }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }
