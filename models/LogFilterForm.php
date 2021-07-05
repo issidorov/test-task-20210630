@@ -4,9 +4,10 @@
 namespace app\models;
 
 
+use yii\base\Model;
 use yii\db\ActiveQuery;
 
-class LogFilterForm extends \yii\base\Model
+class LogFilterForm extends Model
 {
     /** @var string - begin date */
     public $begin;
@@ -14,14 +15,13 @@ class LogFilterForm extends \yii\base\Model
     public $end;
     /** @var int */
     public $system;
-    /** @var int */
-    public $browser;
 
     public function rules()
     {
         return [
             [['begin', 'end'], 'date', 'format' => 'php:Y-m-d'],
-            [['system', 'browser'], 'integer'],
+            [['system'], 'integer'],
+            ['system', 'default', 'value' => null],
         ];
     }
 
@@ -31,7 +31,6 @@ class LogFilterForm extends \yii\base\Model
             'begin' => 'Начальная дата',
             'end' => 'Конечная дата',
             'system' => 'Операционная система',
-            'browser' => 'Браузер',
         ];
     }
 
@@ -62,9 +61,8 @@ class LogFilterForm extends \yii\base\Model
 
     public function apply(ActiveQuery $query)
     {
-        $query->andFilterWhere(['>=', 'log.time', strtotime($this->begin)]);
-        $query->andFilterWhere(['<', 'log.time', strtotime($this->end . ' +1 day')]);
-        $query->andFilterWhere(['log.system_id' => $this->system]);
-        $query->andFilterWhere(['log.browser_id' => $this->browser]);
+        $query->andFilterWhere(['>=', 'date', strtotime($this->begin)]);
+        $query->andFilterWhere(['<', 'date', strtotime($this->end . ' +1 day')]);
+        $query->andWhere(['system_id' => $this->system]);
     }
 }

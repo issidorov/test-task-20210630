@@ -7,11 +7,13 @@ namespace app\models;
 use app\components\LogParser\LogLineEntity;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\StringHelper;
 
 /**
  * @property int $id
  * @property string $ip
  * @property int $time
+ * @property string $date
  * @property string $url
  * @property string $system_id
  * @property string $browser_id
@@ -38,9 +40,10 @@ class Log extends ActiveRecord
     {
         $this->ip = $line->ip;
         $this->time = strtotime($line->time);
-        $this->url = $line->url;
-        $this->system = $line->agent->os ? System::instanceByName($line->agent->os, true) : null;
-        $this->browser = $line->agent->browser ? Browser::instanceByName($line->agent->browser, true) : null;
+        $this->date = date('Y-m-d', $this->time);
+        $this->url = StringHelper::truncate(explode('?', $line->url)[0], 995);
+        $this->system = System::instanceByName($line->agent->os ?: 'Unknown', true);
+        $this->browser = Browser::instanceByName($line->agent->browser ?: 'Unknown', true);
     }
 
     public function attributeLabels()

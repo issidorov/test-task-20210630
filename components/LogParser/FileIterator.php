@@ -4,7 +4,9 @@
 namespace app\components\LogParser;
 
 
-class FileIterator implements \Iterator
+use Iterator;
+
+class FileIterator implements Iterator
 {
     private LineParser $lineParser;
     private string $filename;
@@ -26,8 +28,10 @@ class FileIterator implements \Iterator
             if (feof($this->fd)) {
                 return null;
             }
-            $string = fgets($this->fd);
-            $this->line = $this->lineParser->parse($string);
+            do {
+                $string = fgets($this->fd);
+                $this->line = $this->lineParser->parse($string);
+            } while ($this->line === null && !feof($this->fd));
         }
         return $this->line;
     }

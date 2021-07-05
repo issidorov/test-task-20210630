@@ -1,17 +1,22 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $dataProvider \yii\data\ActiveDataProvider */
-/* @var $filter \app\models\LogFilterForm */
+/* @var $dataProvider ActiveDataProvider */
+/* @var $filter LogFilterForm */
 /* @var $systemNames string[] */
-/* @var $browserNames string[] */
+
+use app\models\LogFilterForm;
+use dosamigos\chartjs\ChartJs;
+use yii\bootstrap\ActiveForm;
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 
 $this->title = 'My Yii Application';
 ?>
 <div class="site-index">
     <div class="row">
         <div class="col-md-6">
-            <?= \dosamigos\chartjs\ChartJs::widget([
+            <?= ChartJs::widget([
                 'type' => 'line',
                 'options' => [
                     'height' => 150,
@@ -35,7 +40,7 @@ $this->title = 'My Yii Application';
             ]); ?>
         </div>
         <div class="col-md-6">
-            <?= \dosamigos\chartjs\ChartJs::widget([
+            <?= ChartJs::widget([
                 'type' => 'line',
                 'options' => [
                     'height' => 150,
@@ -71,21 +76,18 @@ $this->title = 'My Yii Application';
     </div>
 
 
-    <?php $form = \yii\bootstrap\ActiveForm::begin(['action' => ['site/index'], 'method' => 'get']) ?>
+    <?php $form = ActiveForm::begin(['action' => ['site/index'], 'method' => 'get']) ?>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
             <?= $form->field($filter, 'begin')->textInput(['type' => 'date']) ?>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <?= $form->field($filter, 'end')->textInput(['type' => 'date']) ?>
         </div>
         <div class="col-md-3">
             <?= $form->field($filter, 'system')->dropDownList($systemNames, ['prompt' => 'Не выбрано']) ?>
         </div>
         <div class="col-md-3">
-            <?= $form->field($filter, 'browser')->dropDownList($browserNames, ['prompt' => 'Не выбрано']) ?>
-        </div>
-        <div class="col-md-2">
             <div class="form-group">
                 <label class="control-label">&nbsp;</label>
                 <div>
@@ -94,21 +96,15 @@ $this->title = 'My Yii Application';
             </div>
         </div>
     </div>
-    <?php \yii\bootstrap\ActiveForm::end() ?>
+    <?php ActiveForm::end() ?>
 
-    <?= \yii\grid\GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            'ip',
-            'time:datetime',
-            [
-                'attribute' => 'url',
-                'value' => function(\app\models\Log $log) {
-                    return \yii\helpers\StringHelper::truncate($log->url, 60);
-                },
-            ],
-            'system.name:text:ОС',
-            'browser.name:text:Браузер',
+            'date',
+            'requests_count',
+            'top_url',
+            'topBrowser.name:text:Браузер',
         ],
     ]) ?>
 </div>
