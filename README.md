@@ -22,7 +22,7 @@ Run the installation triggers (creating cookie validation code)
     
 Apply migrations:
 
-    docker-compose run --rm ./yii migrate/up --interactive 0
+    docker-compose run --rm php ./yii migrate/up --interactive 0
 
 Start the container
 
