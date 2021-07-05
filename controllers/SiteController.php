@@ -33,6 +33,7 @@ class SiteController extends Controller
             'asc' => ['tb.name' => SORT_ASC],
             'desc' => ['tb.name' => SORT_DESC],
         ];
+        $dataProvider->sort->defaultOrder = ['date' => SORT_DESC];
 
         $systems = System::find()->orderBy('name')->all();
         $systemNames = array_column($systems, 'name', 'id');
