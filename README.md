@@ -1,4 +1,5 @@
-# Nginx Log Analyzer
+Nginx Log Analyzer
+==================
 
 This is a test task project.
 
@@ -18,6 +19,10 @@ Run the installation triggers (creating cookie validation code)
 
     docker-compose run --rm php composer install    
     
+Apply migrations:
+
+    docker-compose run --rm ./yii migrate/up --interactive 0
+
 Start the container
 
     docker-compose up -d
@@ -29,3 +34,10 @@ You can then access the application through the following URL:
 **NOTES:** 
 - Minimum required Docker engine version `17.04` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
 - The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
+
+IMPORT LOGS
+-----------
+
+Use console command:
+
+    ./yii logs/import <filename>
