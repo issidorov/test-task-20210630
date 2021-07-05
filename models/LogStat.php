@@ -23,7 +23,7 @@ class LogStat extends ActiveRecord
         return [
             'date' => 'Дата',
             'requests_count' => 'Кол-во запросов',
-            'top_url' => 'Кол-во запросов',
+            'top_url' => 'Популярный url',
         ];
     }
 

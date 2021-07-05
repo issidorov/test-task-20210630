@@ -104,7 +104,7 @@ $this->title = 'My Yii Application';
             'date',
             'requests_count',
             'top_url',
-            'topBrowser.name:text:Браузер',
+            'topBrowser.name:text:Популярный браузер',
         ],
     ]) ?>
 </div>
