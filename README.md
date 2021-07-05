@@ -26,11 +26,11 @@ Start the container
 
 Apply migrations:
 
-    docker-compose run --rm php ./yii migrate/up --interactive 0
+    docker-compose exec php ./yii migrate/up --interactive 0
 
 Import logs from file:
 
-    docker-compose run --rm php ./yii logs/import <filename>
+    docker-compose exec php ./yii logs/import <filename>
 
 
 You can then access the application through the following URL:
