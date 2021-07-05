@@ -8,6 +8,7 @@ use app\components\LogParser\LogParser;
 use app\components\LogSaver;
 use app\models\Log;
 use Error;
+use Throwable;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\Console;
@@ -29,18 +30,24 @@ class LogsController extends Controller
         Console::startProgress(0, 100);
         $transaction = Yii::$app->db->beginTransaction();
 
-        foreach ($lines as $index => $line) {
-            $model = new Log();
-            $model->loadFromLogLine($line);
-            $saver->save($model);
-            if (!$model->save()) {
-                throw new Error('Save is invalid on line ' . ($index + 1));
+        $index = 0;
+        try {
+            foreach ($lines as $index => $line) {
+                $model = new Log();
+                $model->loadFromLogLine($line);
+                $saver->save($model);
+                if (!$model->save()) {
+                    throw new Error('Save is invalid');
+                }
+                if ($index % 100 === 0) {
+                    Console::updateProgress($lines->getPercentPosition(), 100);
+                }
             }
-            if ($index % 100 === 0) {
-                Console::updateProgress($lines->getPercentPosition(), 100);
-            }
+            $saver->finish();
+        } catch (Throwable $e) {
+            Console::error('Import error on line ' . ($index + 1));
+            throw $e;
         }
-        $saver->finish();
 
         $transaction->commit();
         Console::updateProgress(100, 100);
